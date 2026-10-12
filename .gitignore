@@ -15,6 +15,14 @@ tasks.db
 backend/tasks.db
 backend/database/*.db
 
+# .NET Build Outputs & Cache
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
 # Environment variables & secrets
 .env
 .env.local

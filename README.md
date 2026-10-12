@@ -1,12 +1,13 @@
 # TaskFlow — Modern Full-Stack Task Management App
 
 [![React](https://img.shields.io/badge/Frontend-React%2019%20%2B%20Vite-61DAFB?logo=react&logoColor=black)](https://react.dev/)
-[![Node.js](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![SQLite](https://img.shields.io/badge/Database-SQLite-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+[![.NET](https://img.shields.io/badge/Backend-ASP.NET%20Core%208.0%20Web%20API-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![SQLite](https://img.shields.io/badge/Database-SQLite%20(EF%20Core%208)-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+[![Swagger](https://img.shields.io/badge/API%20Docs-Swagger%20%2F%20OpenAPI-85EA2D?logo=swagger&logoColor=black)](http://localhost:5000/swagger)
 [![Icons](https://img.shields.io/badge/Icons-Lucide%20React-F56565)](https://lucide.dev/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A modern, high-performance, responsive full-stack **Task Management Application** featuring an interactive glassmorphic dashboard, persistent SQLite database storage, full CRUD capabilities, intuitive task filtering and search, and custom notification toasts.
+A modern, high-performance, responsive full-stack **Task Management Application** built with a **React + Vite** frontend and an **ASP.NET Core (.NET 8 Web API)** backend, backed by persistent **SQLite** storage via Entity Framework Core.
 
 Repository: [https://github.com/hariharanofficially/task-management-app](https://github.com/hariharanofficially/task-management-app)
 
@@ -35,10 +36,13 @@ Repository: [https://github.com/hariharanofficially/task-management-app](https:/
   - Interactive floating notifications for success, status updates, and deletions with auto-dismissal.
 - **🛡️ Robust Input Validation & Error Handling**:
   - Client-side validation with real-time feedback.
-  - Server-side validation middleware rejecting malformed payloads and returning clear error messages.
-- **💾 Persistent SQLite Database**:
-  - Local database file (`tasks.db`) initialized with WAL (Write-Ahead Logging) mode and automatic table creation & initial seed data.
-  - Clean separation: database files and `.env` secrets are strictly ignored by `.gitignore`.
+  - ASP.NET Core model validation rejecting malformed payloads and returning clear error messages.
+- **💾 Persistent SQLite Database via EF Core 8**:
+  - Local database file (`tasks.db`) managed via `Microsoft.EntityFrameworkCore.Sqlite`.
+  - Automatic database schema creation and sample seed data on startup.
+  - Database files, `.env`, and compilation artifacts are strictly excluded by `.gitignore`.
+- **📑 Interactive Swagger UI**:
+  - Explore and test all endpoints visually at `http://localhost:5000/swagger`.
 
 ---
 
@@ -46,32 +50,31 @@ Repository: [https://github.com/hariharanofficially/task-management-app](https:/
 
 ```text
 task-management-app/
-├── .gitignore                    # Prevents node_modules, *.db, and .env from being committed
-├── package.json                  # Root npm workspace commands for convenient development
+├── .gitignore                    # Ignores bin/, obj/, *.db, node_modules/, and .env
+├── package.json                  # Root convenience scripts for backend & frontend
 ├── README.md                     # Complete documentation & setup instructions
-├── backend/                      # Node.js + Express.js REST API
-│   ├── .env.example              # Template environment configuration
-│   ├── package.json              # Backend dependencies (express, better-sqlite3, cors, dotenv)
-│   └── src/
-│       ├── config/
-│       │   └── constants.js      # App constants (priorities, statuses, categories)
-│       ├── controllers/
-│       │   └── taskController.js # CRUD business logic, stats calculations & SQLite queries
-│       ├── database/
-│       │   └── db.js             # SQLite connection, table schema creation & seeding
-│       ├── middleware/
-│       │   ├── errorHandler.js   # 404 handler and global exception middleware
-│       │   └── validator.js      # Request body & parameter validation
-│       ├── routes/
-│       │   └── taskRoutes.js     # REST API route endpoints mapping
-│       └── server.js             # Express app bootstrap, CORS configuration & logger
+├── backend/                      # ASP.NET Core (.NET 8 Web API) Backend
+│   ├── backend.csproj            # .NET 8 Project file with EF Core SQLite & Swagger
+│   ├── appsettings.json          # SQLite connection string & logging configuration
+│   ├── Program.cs                # App bootstrap, CORS, DbContext, and request logger
+│   ├── Controllers/
+│   │   ├── HealthController.cs   # GET /api/health endpoint
+│   │   └── TasksController.cs    # Full CRUD, filtering, search, and stats endpoints
+│   ├── Data/
+│   │   └── AppDbContext.cs       # EF Core SQLite DbContext & auto-seeding logic
+│   └── Models/
+│       ├── ApiResponse.cs        # Standard API envelope matching React frontend schema
+│       ├── CreateTaskDto.cs      # Request DTO for task creation
+│       ├── TaskItem.cs           # Task entity mapped to SQLite 'tasks' table
+│       ├── TaskStatsDto.cs       # Analytics response DTO
+│       └── UpdateTaskDto.cs      # Request DTO for task updates
 └── frontend/                     # React + Vite Client Application
-    ├── index.html                # App shell with SEO meta tags & Google Fonts
+    ├── index.html                # HTML shell with Google Fonts & SEO meta tags
     ├── package.json              # Frontend dependencies (react, lucide-react, vite)
-    ├── vite.config.js            # Vite configuration with API reverse proxy to port 5000
+    ├── vite.config.js            # Vite configuration with reverse proxy to port 5000
     └── src/
         ├── App.jsx               # Master state management, CRUD handlers & modal control
-        ├── index.css             # Complete modern CSS design system with CSS custom properties
+        ├── index.css             # Modern CSS design system with CSS custom properties
         ├── main.jsx              # React DOM entry point
         ├── components/
         │   ├── DashboardStats.jsx    # Analytics metrics cards
@@ -83,7 +86,7 @@ task-management-app/
         │   ├── TaskModal.jsx         # Accessible task create/edit modal dialog
         │   └── Toast.jsx             # Floating toast notification cards
         └── services/
-            └── api.js                # Fetch API client connecting to Express endpoints
+            └── api.js                # Fetch API client connecting to .NET backend
 ```
 
 ---
@@ -91,8 +94,8 @@ task-management-app/
 ## 🚀 Installation & Local Setup
 
 ### Prerequisites
-- **Node.js** (v18.0.0 or higher recommended)
-- **npm** (comes with Node.js)
+- **.NET 8 SDK** (installed on system; run `dotnet --version` to verify)
+- **Node.js** (v18.0.0 or higher) & **npm**
 
 ### Step 1: Clone the Repository
 ```bash
@@ -100,38 +103,18 @@ git clone https://github.com/hariharanofficially/task-management-app.git
 cd task-management-app
 ```
 
-### Step 2: Install Dependencies
-
-You can install all dependencies for both backend and frontend at once using the root script:
+### Step 2: Install Frontend Dependencies
 ```bash
-npm run install:all
-```
-
-*Or install them individually:*
-```bash
-# Backend dependencies
-cd backend
-npm install
-cd ..
-
-# Frontend dependencies
 cd frontend
 npm install
 cd ..
 ```
 
-### Step 3: Configure Environment Variables
-
-The backend includes a `.env.example` file. You can create your local `.env`:
+### Step 3: Restore .NET Backend Dependencies
 ```bash
-# In the backend directory:
-cp backend/.env.example backend/.env
-```
-Default configuration:
-```env
-PORT=5000
-NODE_ENV=development
-DB_PATH=./tasks.db
+cd backend
+dotnet restore
+cd ..
 ```
 
 ---
@@ -140,20 +123,20 @@ DB_PATH=./tasks.db
 
 Run the backend and frontend in two separate terminal windows:
 
-### Terminal 1: Start the Backend Server
+### Terminal 1: Start the ASP.NET Core Backend
 ```bash
 cd backend
-npm run dev
+dotnet run
 ```
-*(Runs with Node `--watch` for auto-reloading on `http://localhost:5000`)*
+*(Starts on `http://localhost:5000` with SQLite persistence in `tasks.db`)*
 
 Expected console output:
 ```text
 ===============================================
-🚀 Task Management Server is running!
+🚀 TaskFlow .NET 8 Web API is running!
 📡 URL: http://localhost:5000
 🩺 Health check: http://localhost:5000/api/health
-📋 API Docs: http://localhost:5000/api/tasks
+📋 Swagger Docs: http://localhost:5000/swagger
 ===============================================
 ```
 
@@ -166,6 +149,8 @@ npm run dev
 
 Now open **`http://localhost:5173`** in your browser!
 
+You can also view interactive Swagger documentation at **`http://localhost:5000/swagger`**.
+
 ---
 
 ## 📡 REST API Reference
@@ -177,93 +162,44 @@ All API routes are prefixed with `/api`.
 | **GET** | `/api/health` | Service health check | None |
 | **GET** | `/api/tasks` | Get all tasks | `search`, `status`, `priority`, `category`, `sort` |
 | **GET** | `/api/tasks/stats` | Get analytics summary | None |
-| **GET** | `/api/tasks/:id` | Get single task by ID | None |
+| **GET** | `/api/tasks/{id}` | Get single task by ID | None |
 | **POST** | `/api/tasks` | Create a new task | `{ title, description, priority, category, due_date }` |
-| **PUT** | `/api/tasks/:id` | Update an existing task | `{ title, description, priority, category, due_date, status }` |
-| **PATCH** | `/api/tasks/:id/toggle` | Toggle between pending & completed | None |
-| **DELETE** | `/api/tasks/:id` | Delete task permanently | None |
-
-### Example Request Payloads
-
-#### Create Task (`POST /api/tasks`)
-```json
-{
-  "title": "Build production release bundle",
-  "description": "Optimize bundle chunks and run regression tests",
-  "priority": "high",
-  "category": "Work",
-  "due_date": "2026-10-30"
-}
-```
-
-#### Successful Response (`201 Created`)
-```json
-{
-  "success": true,
-  "message": "Task created successfully",
-  "data": {
-    "id": 5,
-    "title": "Build production release bundle",
-    "description": "Optimize bundle chunks and run regression tests",
-    "status": "pending",
-    "priority": "high",
-    "category": "Work",
-    "due_date": "2026-10-30",
-    "created_at": "2026-10-12 13:12:00",
-    "updated_at": "2026-10-12 13:12:00"
-  }
-}
-```
+| **PUT** | `/api/tasks/{id}` | Update an existing task | `{ title, description, priority, category, due_date, status }` |
+| **PATCH** | `/api/tasks/{id}/toggle` | Toggle between pending & completed | None |
+| **DELETE** | `/api/tasks/{id}` | Delete task permanently | None |
 
 ---
 
 ## 🧪 Testing Each CRUD Operation
 
 ### 1. In the Web UI (`http://localhost:5173`)
-1. **Create (C)**:
-   - Click the **"New Task"** button in the top navigation bar (or press `Ctrl+N` / `Cmd+N`).
-   - Fill in Title, Description, Priority (High/Medium/Low), Category, and Due Date.
-   - Click **"Create Task"**. Verify the new task card appears instantly and a green toast notification shows up.
-2. **Read / Search / Filter (R)**:
-   - Type keywords into the search box; matching items update in real time.
-   - Click **Active** to view only pending tasks; click **Completed** to view completed tasks.
-   - Select a priority filter like **High** or a category like **Work** to verify specific subsets.
-3. **Update (U)**:
-   - Click the **Pencil (Edit)** button on any task card.
-   - Modify the title or details, and click **"Save Changes"**.
-4. **Toggle Status (U)**:
-   - Click the checkbox on any task card.
-   - The task immediately transitions between active and completed with a strikethrough effect and counter updates.
-5. **Delete (D)**:
-   - Click the **Trash (Delete)** icon on a task card.
-   - A confirmation dialog appears. Click **"Delete Task"** to permanently remove it.
+1. **Create (C)**: Click **"New Task"** in the top navigation bar (or press `Ctrl+N`). Enter Title, Description, Priority, Category, and Due Date, then click **"Create Task"**.
+2. **Read / Search / Filter (R)**: Type in the search box to filter in real time. Switch between **All**, **Active**, and **Completed** tabs. Filter by **Priority** or **Category**.
+3. **Update (U)**: Click the **Pencil (Edit)** button on any task card, edit details, and click **"Save Changes"**.
+4. **Toggle Status (U)**: Click the checkbox next to any task card to toggle completion.
+5. **Delete (D)**: Click the **Trash** icon on a task card and confirm deletion in the modal dialog.
 
-### 2. Using Terminal / cURL Commands
+### 2. Via Swagger UI
+Visit **`http://localhost:5000/swagger`** in your browser to test each endpoint directly with an interactive GUI.
 
-```bash
-# 1. Check API Health
-curl -X GET http://localhost:5000/api/health
+### 3. Via cURL
+```powershell
+# Check Health
+curl http://localhost:5000/api/health
 
-# 2. Get All Tasks
-curl -X GET http://localhost:5000/api/tasks
+# Get All Tasks
+curl http://localhost:5000/api/tasks
 
-# 3. Get Dashboard Stats
-curl -X GET http://localhost:5000/api/tasks/stats
+# Get Dashboard Stats
+curl http://localhost:5000/api/tasks/stats
 
-# 4. Create a Task
-curl -X POST http://localhost:5000/api/tasks \
-  -H "Content-Type: application/json" \
-  -d "{\"title\":\"Verify API CRUD\",\"priority\":\"high\",\"category\":\"Work\"}"
+# Create Task
+curl -X POST http://localhost:5000/api/tasks -H "Content-Type: application/json" -d "{\"title\":\".NET Task\",\"priority\":\"high\",\"category\":\"Work\"}"
 
-# 5. Update Task #1
-curl -X PUT http://localhost:5000/api/tasks/1 \
-  -H "Content-Type: application/json" \
-  -d "{\"title\":\"Updated Task Title\",\"priority\":\"low\"}"
-
-# 6. Toggle Completion on Task #1
+# Toggle Completion on Task #1
 curl -X PATCH http://localhost:5000/api/tasks/1/toggle
 
-# 7. Delete Task #1
+# Delete Task #1
 curl -X DELETE http://localhost:5000/api/tasks/1
 ```
 
@@ -274,14 +210,14 @@ curl -X DELETE http://localhost:5000/api/tasks/1
 To commit and push all newly created code to your repository:
 
 ```bash
-# 1. Review status (verify no .env or .db files are staged)
+# 1. Review status (verify no .env, bin/, obj/, or .db files are staged)
 git status
 
 # 2. Stage all project files
 git add .
 
 # 3. Create a descriptive commit
-git commit -m "feat: complete Task Management App with React frontend, Express API, and SQLite database"
+git commit -m "feat: migrate backend to ASP.NET Core (.NET 8 Web API) with EF Core SQLite and Swagger"
 
 # 4. Ensure you are on the main branch
 git branch -M main
